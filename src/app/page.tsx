@@ -15,7 +15,7 @@ export default function PetConnectDashboard() {
         <div></div>
 
         <div className="flex gap-6">
-          <AiAlertsCard />
+          <AiAlertsCard />d
           <DocumentationCard />
         </div>
       </div>
