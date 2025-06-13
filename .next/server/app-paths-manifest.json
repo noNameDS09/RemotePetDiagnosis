@@ -1,5 +1,13 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js"
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/auth/logout/route": "app/api/auth/logout/route.js",
+  "/api/auth/signup/route": "app/api/auth/signup/route.js",
+  "/api/dashboard/doctor/route": "app/api/dashboard/doctor/route.js",
+  "/api/dashboard/user/route": "app/api/dashboard/user/route.js",
+  "/doctor/page": "app/doctor/page.js",
+  "/login/page": "app/login/page.js",
+  "/logout/page": "app/logout/page.js",
+  "/page": "app/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/user/page": "app/user/page.js"
 }

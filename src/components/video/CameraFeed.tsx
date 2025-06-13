@@ -1,6 +1,6 @@
 'use client'
+import { Maximize } from 'lucide-react';
 import React, { useRef } from 'react';
-// import FullscreenIcon from '@mui/icons-material/Fullscreen';
 
 interface CameraProps {
   View: string;
@@ -25,7 +25,7 @@ const CameraFeed: React.FC<CameraProps> = ({ View, cameraUrl }) => {
   };
 
   return (
-    <div className='relative w-full h-full rounded-lg bg-white ring-1 ring-gray-300 p-2'>
+    <div className='relative w-full h-full rounded-lg bg-white shadow-xl ring-1 ring-gray-300 p-2'>
       <div className='font-semibold text-[16px] h-8 text-center'>{View}</div>
 
       <video
@@ -36,18 +36,17 @@ const CameraFeed: React.FC<CameraProps> = ({ View, cameraUrl }) => {
         loop
         muted
         playsInline
-        controls={false}
+        controls={true}
       />
 
       {/* Fullscreen Button - bottom right */}
-      <button
+      {/* <button
         onClick={handleFullscreen}
         className='absolute bottom-2 right-2 p-2 bg-gray-800 text-white rounded-full hover:bg-gray-700 shadow-md'
         aria-label="Fullscreen"
       >
-        {/* <FullscreenIcon fontSize="small" /> */}
-        FS
-      </button>
+        <Maximize />
+      </button> */}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { AlertTriangle, Info } from 'lucide-react';
+import { AlertTriangle, Bot, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -8,7 +8,7 @@ export function AiAlertsCard() {
     <Card className="shadow-lg h-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl font-headline">
-          <AlertTriangle className="h-6 w-6 text-destructive" />
+          <Bot className='h-6 w-6 text-gray-700'/>
           AI-Powered Alerts
         </CardTitle>
       </CardHeader>

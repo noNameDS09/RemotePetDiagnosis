@@ -7,13 +7,25 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { PawPrint, UserPlus, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from '@/components/ui/switch';
 
 export default function SignupPage() {
+  const [name, setName] = useState('');
+  const [phoneNo, setPhoneNo] = useState('');
+  const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isDoctor, setIsDoctor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -26,7 +38,14 @@ export default function SignupPage() {
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          isDoctor,
+          phone_no: phoneNo,
+          address,
+        }),
       });
 
       const data = await response.json();
@@ -69,6 +88,18 @@ export default function SignupPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Jane Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -77,7 +108,6 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="text-base"
                 disabled={isLoading}
               />
             </div>
@@ -91,9 +121,45 @@ export default function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="text-base"
                 disabled={isLoading}
               />
+            </div>
+            {!isDoctor && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="123-456-7890"
+                    value={phoneNo}
+                    onChange={(e) => setPhoneNo(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    type="text"
+                    placeholder="123 Pet Street"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+              </>
+            )}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="isDoctor" className="flex items-center gap-2">
+                <Switch
+                  id="isDoctor"
+                  checked={isDoctor}
+                  onCheckedChange={setIsDoctor}
+                  disabled={isLoading}
+                />
+                I'm a doctor
+              </Label>
             </div>
             <Button type="submit" className="w-full text-lg py-6" disabled={isLoading}>
               {isLoading ? (

@@ -10,10 +10,12 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { PawPrint, LogIn, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from '@/components/ui/switch';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isDoctor, setIsDoctor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -26,7 +28,7 @@ export default function LoginPage() {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, isDoctor }),
       });
 
       const data = await response.json();
@@ -34,10 +36,10 @@ export default function LoginPage() {
       if (response.ok) {
         toast({
           title: "Login Successful",
-          description: `Welcome back, ${data.user?.email || 'user'}!`,
+          description: `Welcome back, ${data.user?.email || data.doctor?.email || 'user'}!`,
         });
-        router.push('/'); 
-        router.refresh(); 
+        router.push('/');
+        router.refresh();
       } else {
         toast({
           title: "Login Failed",
@@ -58,7 +60,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
+    <div className="flex items-center justify-center h-[calc(100vh-5.1rem)] bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
@@ -94,6 +96,17 @@ export default function LoginPage() {
                 className="text-base"
                 disabled={isLoading}
               />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="isDoctor" className="flex items-center gap-2">
+                <Switch
+                  id="isDoctor"
+                  checked={isDoctor}
+                  onCheckedChange={setIsDoctor}
+                  disabled={isLoading}
+                />
+                I'm a doctor
+              </Label>
             </div>
             <Button type="submit" className="w-full text-lg py-6" disabled={isLoading}>
               {isLoading ? (

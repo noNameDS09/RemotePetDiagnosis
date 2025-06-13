@@ -20,7 +20,7 @@ export function DocumentationCard() {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col justify-between h-[calc(100%-theme(spacing.20))]"> {/* Adjust height based on CardHeader */}
-        <ScrollArea className="h-[200px] md:h-[250px] pr-3 mb-4">
+        <ScrollArea className="h-[200px] md:h-[240px] pr-3 mb-4">
           <ul className="space-y-2">
             {sessionRecords.map((record) => (
               <li 
