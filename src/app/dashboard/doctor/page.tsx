@@ -20,6 +20,8 @@ import {
 } from '@mui/material';
 import { CalendarToday, Pets, Email } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
 
 interface Appointment {
   pet_name: string;
@@ -41,6 +43,7 @@ export default function DoctorDashboardPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [checkedPets, setCheckedPets] = useState<CheckedPet[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchDoctorDashboard = async () => {
@@ -63,7 +66,7 @@ export default function DoctorDashboardPage() {
           );
 
           // Previously checked pets: past sessions
-          console.log(data.sessions)
+          
           const past = (data.sessions || []).filter(
             (s: any) => new Date(s.date) <= new Date()
           );
@@ -74,11 +77,14 @@ export default function DoctorDashboardPage() {
               report: s.report,
             }))
           );
-        } else {
-          console.error(data.message);
-        }
+        } 
       } catch (err) {
-        console.error('Error fetching doctor dashboard:', err);
+        // console.log('Error fetching doctor dashboard:', err);
+        toast({
+        title: "Login Error",
+        description: "Could not fetch the details. Please try again.",
+        variant: "destructive",
+      });
       } finally {
         setLoading(false);
       }
@@ -97,14 +103,16 @@ export default function DoctorDashboardPage() {
 
   if (!doctor) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-xl">
-        You must be logged in as a doctor to view this page.
+      <div className="flex justify-center items-center h-[calc(100vh-10rem)] text-xl">
+        You must be&nbsp;
+        <button className='text-blue-400' onClick={()=>router.push('/login')}>logged</button>
+        &nbsp;in as a doctor to view this page.
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center bg-gradient-to-br from-blue-50 to-white min-h-screen p-8">
+    <div className="flex items-center justify-center bg-gradient-to-br from-blue-50 to-white h-[calc(screen-4rem)] p-8">
       <div className="w-full max-w-5xl pt-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">

@@ -12,7 +12,7 @@ export default function LogoutPage() {
         method: 'POST',
       });
 
-      router.push('/login');
+      router.push('/');
       router.refresh();
     };
 

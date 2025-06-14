@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
             phone_no,
             address,
             password: hashedPassword,
+            is_doctor:isDoctor
           },
         ])
         .select("id, email, created_at")
@@ -88,6 +89,7 @@ export async function POST(request: NextRequest) {
             name,
             email,
             password: hashedPassword,
+            is_doctor:isDoctor
           },
         ])
         .select("id, email, created_at")

@@ -31,66 +31,63 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist
 ;
 ;
 const JWT_SECRET_KEY = process.env.JWT_SECRET;
-async function verifyToken(token) {
+async function verifyAndDecodeToken(token) {
     if (!JWT_SECRET_KEY) {
-        console.error('JWT_SECRET environment variable is not set.');
-        return false;
+        console.error("JWT_SECRET environment variable is not set.");
+        return null;
     }
     try {
         const secret = new TextEncoder().encode(JWT_SECRET_KEY);
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$browser$2f$jwt$2f$verify$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["jwtVerify"])(token, secret);
-        return true;
+        const { payload } = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jose$2f$dist$2f$browser$2f$jwt$2f$verify$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["jwtVerify"])(token, secret);
+        return payload;
     } catch (error) {
-        console.warn('Token verification failed:', error instanceof Error ? error.message : error);
-        return false;
+        console.warn("Token verification failed:", error instanceof Error ? error.message : error);
+        return null;
     }
 }
 async function middleware(request) {
-    const { pathname } = request.nextUrl;
-    const tokenCookie = request.cookies.get('auth_token');
-    const token = tokenCookie?.value;
-    // Allow access to static files and auth API routes without token check
-    if (pathname.startsWith('/_next') || pathname.startsWith('/api/auth') || // Allows both /api/auth/login and /api/auth/signup
-    pathname.endsWith('.png') || pathname.endsWith('.jpg') || pathname.endsWith('.jpeg') || pathname.endsWith('.gif') || pathname.endsWith('.svg') || pathname.endsWith('.ico')) {
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].next();
-    }
-    const isLoginPage = pathname === '/login';
-    const isSignupPage = pathname === '/signup';
-    if (token) {
-        const isValidToken = await verifyToken(token);
-        if (isValidToken) {
-            // If logged in and trying to access login or signup page, redirect to home
-            if (isLoginPage || isSignupPage) {
-                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL('/', request.url));
-            }
-            // Allow access to other pages
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].next();
-        } else {
-            // Invalid token, clear it
-            const response = isLoginPage || isSignupPage ? __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].next() // Allow staying on login/signup page if token is invalid
-             : __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL('/login', request.url));
-            response.cookies.delete('auth_token');
-            return response;
-        }
-    } else {
-        // No token
-        // Allow access to login and signup pages if no token
-        if (isLoginPage || isSignupPage) {
+    const token = request.cookies.get("auth_token")?.value;
+    const pathname = request.nextUrl.pathname;
+    // console.log("🔍 pathname:", pathname);
+    // console.log("🔍 token present:", !!token);
+    if (!token) {
+        // console.log("❌ No token — redirecting to /login");
+        if (pathname === "/auth/login" || pathname === "/auth/signup") {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].next();
         }
-        // Redirect to login for any other protected page
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL('/login', request.url));
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/auth/login", request.url));
     }
+    const payload = await verifyAndDecodeToken(token);
+    // console.log("🔍 decoded payload:", payload);
+    if (!payload) {
+        // console.log("❌ Invalid token — redirecting to /login and deleting cookie");
+        const res = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/auth/login", request.url));
+        res.cookies.delete("auth_token");
+        return res;
+    }
+    const isDoctor = payload.isDoctor;
+    // console.log("✅ isDoctor:", isDoctor);
+    if (isDoctor && pathname.startsWith("/dashboard/user")) {
+        // console.log("🔁 Doctor trying to access /user — redirecting to /doctor");
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/dashboard/doctor", request.url));
+    }
+    if (!isDoctor && pathname.startsWith("/dashboard/doctor")) {
+        // console.log("🔁 User trying to access /doctor — redirecting to /user");
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/dashboard/user", request.url));
+    }
+    if (pathname === "/auth/login" || pathname === "/auth/signup") {
+        // console.log("🔁 Already logged in — redirecting to home");
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].redirect(new URL("/", request.url));
+    }
+    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$esm$2f$server$2f$web$2f$spec$2d$extension$2f$response$2e$js__$5b$middleware$2d$edge$5d$__$28$ecmascript$29$__["NextResponse"].next();
 }
 const config = {
     matcher: [
-        /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Match all paths to apply token check, then specifically allow some paths inside the middleware.
-     */ '/((?!_next/static|_next/image|favicon.ico).*)'
+        "/dashboard/doctor/:path*",
+        "/dashboard/user/:path*",
+        "/auth/login",
+        "/auth/signup",
+        "/"
     ]
 };
 }}),

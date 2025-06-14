@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     // 2. Get doctor info
     const { data: doctor, error: doctorError } = await supabase
       .from("doctors")
-      .select("name, email")
+      .select("name, email, is_doctor")
       .eq("id", doctorId)
       .single();
 
@@ -82,9 +82,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(doctor);
-    console.log(pets)
-    console.log(sessions);
+    // console.log(doctor);
+    // console.log(pets)
+    // console.log(sessions);
     return NextResponse.json({
       doctor,
       pets,

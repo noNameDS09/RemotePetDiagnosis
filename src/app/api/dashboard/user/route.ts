@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Fetch user info
     const { data: user, error: userError } = await supabase
       .from('users')
-      .select('id, name, email')
+      .select('id, name, email, is_doctor')
       .eq('id', decoded.userId)
       .single();
 
@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
         user: {
           name: user.name,
           email: user.email,
+          isDoctor: user.is_doctor,
         },
         pets,
         sessions,

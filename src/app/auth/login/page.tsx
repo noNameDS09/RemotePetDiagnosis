@@ -7,22 +7,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
-import { PawPrint, UserPlus, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { PawPrint, LogIn, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from '@/components/ui/switch';
 
-export default function SignupPage() {
-  const [name, setName] = useState('');
-  const [phoneNo, setPhoneNo] = useState('');
-  const [address, setAddress] = useState('');
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isDoctor, setIsDoctor] = useState(false);
@@ -35,38 +25,32 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          isDoctor,
-          phone_no: phoneNo,
-          address,
-        }),
+        body: JSON.stringify({ email, password, isDoctor }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         toast({
-          title: "Signup Successful",
-          description: "Your account has been created. Please log in.",
+          title: "Login Successful",
+          description: `Welcome back, ${data.user?.email || data.doctor?.email || 'user'}!`,
         });
-        router.push('/login');
+        router.push('/');
+        router.refresh();
       } else {
         toast({
-          title: "Signup Failed",
-          description: data.message || 'An error occurred during signup.',
+          title: "Login Failed",
+          description: data.message || 'An error occurred during login.',
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('Signup request failed:', error);
+      // console.log('Login request failed:', error);
       toast({
-        title: "Signup Error",
+        title: "Login Error",
         description: "Could not connect to the server. Please try again.",
         variant: "destructive",
       });
@@ -76,29 +60,17 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
+    <div className="flex items-center justify-center h-[calc(100vh-5.1rem)] bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
             <PawPrint className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold">Create Account</CardTitle>
-          <CardDescription>Join PetConnect to monitor your pets.</CardDescription>
+          <CardTitle className="text-3xl font-bold">PetConnect Login</CardTitle>
+          <CardDescription>Access your pet monitoring dashboard.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Jane Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -108,6 +80,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="text-base"
                 disabled={isLoading}
               />
             </div>
@@ -116,40 +89,14 @@ export default function SignupPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="•••••••• (min. 6 characters)"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
+                className="text-base"
                 disabled={isLoading}
               />
             </div>
-            {!isDoctor && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="123-456-7890"
-                    value={phoneNo}
-                    onChange={(e) => setPhoneNo(e.target.value)}
-                    disabled={isLoading}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
-                  <Input
-                    id="address"
-                    type="text"
-                    placeholder="123 Pet Street"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    disabled={isLoading}
-                  />
-                </div>
-              </>
-            )}
             <div className="flex items-center justify-between">
               <Label htmlFor="isDoctor" className="flex items-center gap-2">
                 <Switch
@@ -165,16 +112,16 @@ export default function SignupPage() {
               {isLoading ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
-                <UserPlus className="mr-2 h-5 w-5" />
+                <LogIn className="mr-2 h-5 w-5" />
               )}
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col items-center text-sm text-muted-foreground space-y-2">
-          <p>Already have an account?</p>
+          <p>Need an account?</p>
           <Button variant="link" asChild className="p-0 h-auto">
-            <Link href="/login">Log in here</Link>
+            <Link href="/auth/signup">Create an account</Link>
           </Button>
         </CardFooter>
       </Card>

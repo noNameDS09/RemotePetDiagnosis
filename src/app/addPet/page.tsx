@@ -43,7 +43,7 @@ export default function AddPetPage() {
         });
       }
     } catch (error) {
-      console.error('Error adding pet:', error);
+      console.log('Error adding pet:', error);
       toast({
         title: 'Network Error',
         description: 'Could not connect to the server.',

@@ -6,7 +6,7 @@
   "static/chunks/node_modules_motion-dom_dist_es_fa3ea29e._.js",
   "static/chunks/node_modules_@mui_system_esm_fe173252._.js",
   "static/chunks/node_modules_@mui_material_esm_a2469b34._.js",
-  "static/chunks/node_modules_fb083f77._.js",
+  "static/chunks/node_modules_3bbafea7._.js",
   "static/chunks/src_b58117eb._.js"
 ],
     source: "dynamic"

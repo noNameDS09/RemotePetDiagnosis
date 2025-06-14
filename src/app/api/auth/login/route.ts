@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (!isDoctor) {
       const { data: user, error: userError } = await supabase
         .from("users")
-        .select("id, email, name, phone_no, address, password")
+        .select("id, email, name, phone_no, address, password, is_doctor")
         .eq("email", email)
         .single();
 
@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
           name: user.name,
           phone_no: user.phone_no,
           address: user.address,
+          isDoctor:user.is_doctor
         },
       });
 
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
     } else {
       const { data: doctor, error: doctorError } = await supabase
         .from("doctors")
-        .select("id, email, password")
+        .select("id, email, password, is_doctor")
         .eq("email", email)
         .single();
 
@@ -119,6 +120,7 @@ export async function POST(request: NextRequest) {
         doctor: {
           id: doctor.id,
           email: doctor.email,
+          isDoctor:doctor.is_doctor
         },
       });
 

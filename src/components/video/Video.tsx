@@ -28,7 +28,7 @@ const VideoFeed = () => {
 
   return (
     <div className="md:h-[screen] w-screen md:p-4 flex flex-col lg:flex-row gap-4 justify-center items-center text-center">
-      <div className="lg:w-[68%] rounded-xl lg:p-6 lg:px-8">
+      <div className="lg:w-[65%] rounded-xl lg:p-6 lg:px-8">
         <div className="md:h-full mb-6 ring-1 rounded-lg ring-gray-300 bg-white">
           <CameraFeed cameraUrl={mainCamera.url} View={mainCamera.name} />
         </div>
