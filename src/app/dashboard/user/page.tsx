@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Loader2 } from "lucide-react";
-import { Button } from "@mui/material";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 interface Pet {
   id: string;
@@ -33,6 +33,8 @@ export default function UserDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [isFailed, setIsFailed] = useState<boolean>(false);
   const router = useRouter();
+  const { toast } = useToast();
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -56,6 +58,30 @@ export default function UserDashboardPage() {
 
     fetchDashboardData();
   }, []);
+
+  async function deletePet(
+    petId: string
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      const res = await fetch(`/api/pet/deletepet/${petId}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        return { success: true };
+      } else {
+        return {
+          success: false,
+          message: data.message || "Failed to delete pet.",
+        };
+      }
+    } catch (error) {
+      console.error("Delete pet error:", error);
+      return { success: false, message: "Something went wrong." };
+    }
+  }
 
   if (loading) {
     return (
@@ -105,20 +131,64 @@ export default function UserDashboardPage() {
 
       {/* Pets Section */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold">Your Pets</CardTitle>
+        <CardHeader className="flex flex-row justify-between items-center">
+          <div>
+            <CardTitle className="text-2xl font-semibold">Your Pets</CardTitle>
+          </div>
+          <div>
+            <button
+              onClick={() => {
+                setLoading(true);
+                router.push("/pet/addPet");
+                setLoading(false);
+              }}
+            >
+              <Plus color="gray" />
+            </button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {pets.length > 0 ? (
             pets.map((pet) => (
               <div
                 key={pet.id}
-                className="border border-muted rounded-xl p-4 bg-muted/40 shadow-sm"
+                className="border border-muted rounded-xl p-4 bg-muted/40 shadow-sm flex justify-between items-center"
               >
-                <p className="text-lg font-medium">{pet.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  Species: {pet.type}
-                </p>
+                <span>
+                  <p className="text-lg font-medium">{pet.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Species: {pet.type}
+                  </p>
+                </span>
+                <span>
+                  <button
+                    onClick={async () => {
+                      const confirmed = confirm(`Delete pet "${pet.name}"?`);
+                      if (!confirmed) return;
+
+                      const result = await deletePet(pet.id);
+                      if (result.success) {
+                        setPets((prevPets) =>
+                          prevPets.filter((p) => p.id !== pet.id)
+                        );
+                        toast({
+                          title: "Pet Deleted",
+                          description: `Pet "${pet.name}" has been successfully deleted.`,
+                        });
+                      } else {
+                        toast({
+                          title: "Error",
+                          description:
+                            result.message || "Failed to delete pet.",
+                          variant: "destructive",
+                        });
+                      }
+                    }}
+                  >
+                    <Trash2 className="text-red-500" />
+                  </button>
+                  {/* {pet.id} */}
+                </span>
               </div>
             ))
           ) : (

@@ -38,8 +38,8 @@ export default function LoginPage() {
           title: "Login Successful",
           description: `Welcome back, ${data.user?.email || data.doctor?.email || 'user'}!`,
         });
-        router.push('/');
         router.refresh();
+        router.push('/');
       } else {
         toast({
           title: "Login Failed",

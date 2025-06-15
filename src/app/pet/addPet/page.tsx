@@ -34,7 +34,7 @@ export default function AddPetPage() {
           title: 'Pet Added',
           description: `Pet "${data.pet.name}" was successfully added!`,
         });
-        router.push('/user'); // or wherever you show pets
+        router.push('/dashboard/user'); // or wherever you show pets
       } else {
         toast({
           title: 'Error',
